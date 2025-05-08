@@ -1,42 +1,37 @@
 import css from "./App.module.css";
-import ContactForm from "./components/ContactForm/ContactForm";
-import ContactList from "./components/ContactList/ContactList";
-import SearchBox from "./components/SearchBox/SearchBox";
-import { useState, useEffect } from "react";
-import InitialContacts from "./contacts.json";
+import { useState } from "react";
+import SearchBar from "./components/SearchBar/SearchBar";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+
+import { fetchImages } from "./images-api.js";
 
 function App() {
-  const [contacts, setContacts] = useState(() => {
-    const savedContacts = localStorage.getItem("contacts");
-    return savedContacts ? JSON.parse(savedContacts) : InitialContacts;
-  });
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [total, setTotal] = useState(0);
 
-  const [filter, setFilter] = useState("");
-  useEffect(() => {
-    localStorage.setItem("contacts", JSON.stringify(contacts));
-  }, [contacts]);
-  const addContact = (newContact) => {
-    setContacts((prevContacts) => {
-      return [...prevContacts, newContact];
-    });
+  const handleSearch = async (query) => {
+    try {
+      setLoading(true);
+      const currentPage = 1;
+      const data = await fetchImages(query, currentPage);
+      setImages((prevImages) => [...prevImages, ...data.images]);
+      setTotal(data.total);
+    } catch (error) {
+      setError(true);
+      console.error("Error fetching images:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-  const deleteContact = (contactId) => {
-    setContacts((prevContacts) => {
-      return prevContacts.filter((contact) => contact.id !== contactId);
-    });
-  };
-  const visibleContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
   return (
-    <>
-      <div className={css.container}>
-        <h1>Phonebook</h1>
-        <ContactForm onAdd={addContact} />
-        <SearchBox value={filter} onFilter={setFilter} />
-        <ContactList contacts={visibleContacts} onDelete={deleteContact} />
-      </div>
-    </>
+    <div className={css.container}>
+      <SearchBar onSearch={handleSearch} />
+      {loading && <p>Loading...</p>}
+      {error && <p>Error fetching images. Please try again.</p>}
+      <ImageGallery imagesData={images} />
+    </div>
   );
 }
 export default App;
