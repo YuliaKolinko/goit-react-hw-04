@@ -3,7 +3,7 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 export default function SearchBar({ onSearch }) {
   return (
-    <div>
+    <div className={css.searchbar}>
       <Formik
         initialValues={{ search: "" }}
         validationSchema={Yup.object({

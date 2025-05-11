@@ -58,3 +58,11 @@ p {
   gap: 15px;
   margin: 0 auto;
 }
+/* Для лоудера */
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+}
