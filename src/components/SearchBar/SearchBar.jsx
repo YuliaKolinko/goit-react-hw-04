@@ -1,6 +1,7 @@
 import css from "./SearchBar.module.css";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
 export default function SearchBar({ onSearch }) {
   return (
     <div className={css.searchbar}>
@@ -9,15 +10,30 @@ export default function SearchBar({ onSearch }) {
         validationSchema={Yup.object({
           search: Yup.string()
             .min(3, "You must enter at least 3 characters")
-            .max(50, "You cannot write more than 50 characters"),
+            .max(50, "You cannot write more than 50 characters")
+            .required("This field is required"),
         })}
         onSubmit={(values, { resetForm }) => {
-          onSearch(values.search);
+          const trimmed = values.search.trim();
+          onSearch(trimmed.toLowerCase());
           resetForm();
         }}
       >
-        {() => (
-          <Form className={css.form}>
+        {({ handleSubmit, validateForm }) => (
+          <Form
+            className={css.form}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const formErrors = await validateForm();
+
+              if (formErrors.search) {
+                toast.error(formErrors.search);
+                return;
+              }
+
+              handleSubmit(e);
+            }}
+          >
             <Field
               className={css.input}
               type="text"

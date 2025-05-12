@@ -4,9 +4,11 @@ import SearchBar from "./components/SearchBar/SearchBar";
 import ImageGallery from "./components/ImageGallery/ImageGallery";
 import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 import { fetchImages } from "./images-api.js";
-import ModalComponent from "./components/Modal/Modal";
+import ModalComponent from "./components/ImageModal/Modal.jsx";
 import ErrorMessage from "./components/ErrorMeaasge/ErrorMessage.jsx";
 import { BeatLoader } from "react-spinners";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [images, setImages] = useState([]);
@@ -99,6 +101,7 @@ function App() {
         onRequestClose={closeModal}
         image={selectedImage}
       />
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }
